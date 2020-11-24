@@ -1643,6 +1643,10 @@ bool Building::hasImposedHeatDemand(unsigned int day, unsigned int hour) {
 }
 
 
+Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(hdl,pDistrict) {
+
+}
+
 
 Tree::Tree(TiXmlHandle hdl, ostream* pLogStream):logStream(std::cout.rdbuf()) {
 

@@ -353,6 +353,17 @@ public:
 
 };
 
+class Pedestrian : public Building { 
+
+public:
+
+    // the constructor of the building, which reads in the XML file and the destructor that removes the Zones
+    Pedestrian(TiXmlHandle hdl, District* pDistrict);
+    ~Pedestrian();
+};
+
+
+
 class Tree {
 
 private:

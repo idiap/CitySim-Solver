@@ -1656,6 +1656,19 @@ void XmlScene::addAllSurfacesToScene(){
         scene.AddGroundSurface(GENHandle<Ground>(*it));
     }
     logStream << "Ground surfaces added to the scene." << endl;
+
+    // browse the pedestrians to create the diffuse radiation surfaces
+    for (unsigned int i=0; i<pDistrict->getnPedestrians(); ++i) { // loop on all pedestrians
+        for (unsigned int j=0; j<pDistrict->getPedestrian(i)->getnZones(); ++j) { // loop on all zones in the pedestrian
+            // loop for the walls on this zone
+            for (unsigned int k=0; k<pDistrict->getPedestrian(i)->getZone(j)->getnWalls(); ++k) {
+                logStream << "Pedestrian " << i << "\tZone: " << j << "\tWall " << k << endl << flush;
+                // add the surface to the Buildings surfaces (daylight calculation)
+                scene.AddDiffuseSamplingPoint(GENHandle<Wall>(pDistrict->getPedestrian(i)->getZone(j)->getWall(k)));
+            }
+        }
+    }
+    logStream << "Pedestrians' surfaces added to the scene." << endl << flush;
 }
 
 void XmlScene::readClimate(string fileName){
@@ -3918,6 +3931,14 @@ void XmlScene::writeSWHeaderText(string fileOut) {
         } // end the loop on zones
     }
 
+    for (unsigned int j=0; j<pDistrict->getnBuildings(); ++j) {
+            if (!pDistrict->getBuilding(j)->isMRT()) continue; // forgets about the buildings that are not MRT (goes at the end of the for statement)
+            textFile << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":MRT(°C)\t"
+                     << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":COMFA*(W/m²)\t"
+                     << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":ITS(W)\t";
+    }
+
+
     // loop on the tree surfaces in the district itself
     for (size_t j=0; j<pDistrict->getnTrees(); ++j)
         for (size_t k=0;k<pDistrict->getTree(j)->getnSurfaces();++k)
@@ -4620,11 +4641,19 @@ void XmlScene::writeCMHeaderText(string fileOut) {
 
     // loop to output the surface ids
     textFile << "#";
+
     for (unsigned int j=0; j<pDistrict->getnBuildings(); ++j) {
             if (!pDistrict->getBuilding(j)->isMRT()) continue; // forgets about the buildings that are not MRT (goes at the end of the for statement)
             textFile << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":MRT(°C)\t"
                      << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":COMFA*(W/m²)\t"
                      << pDistrict->getBuilding(j)->getId() << "(" << pDistrict->getBuilding(j)->getKey() << ")" << ":ITS(W)\t";
+    }
+
+
+    for (unsigned int j=0; j<pDistrict->getnPedestrians(); ++j) {
+            textFile << pDistrict->getPedestrian(j)->getId() << "(" << pDistrict->getPedestrian(j)->getKey() << ")" << ":MRT(°C)\t"
+                     << pDistrict->getPedestrian(j)->getId() << "(" << pDistrict->getPedestrian(j)->getKey() << ")" << ":COMFA*(W/m²)\t"
+                     << pDistrict->getPedestrian(j)->getId() << "(" << pDistrict->getPedestrian(j)->getKey() << ")" << ":ITS(W)\t";
     }
 
     textFile << endl;
@@ -4649,6 +4678,17 @@ void XmlScene::writeCMResultsText(string fileOut) {
 
             // calls the model to compute the comfort indices
             Model::computeCMIndices(pClimate,pDistrict->getBuilding(j),i,preTimeStepsSimulated,MRT,COMFA,ITS);
+
+            textFile << MRT << "\t";
+            textFile << COMFA << "\t";
+            textFile << ITS << "\t";
+
+        }
+        // loop on the number of pedestrians
+        for (unsigned int j=0; j<pDistrict->getnPedestrians(); ++j) {
+
+            // calls the model to compute the comfort indices
+            Model::computeCMIndices(pClimate,pDistrict->getPedestrian(j),i,preTimeStepsSimulated,MRT,COMFA,ITS);
 
             textFile << MRT << "\t";
             textFile << COMFA << "\t";

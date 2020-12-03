@@ -119,8 +119,6 @@ public:
 	string getKey() { return key; }
     void setKey(string k){key = k; }
 
-	// returns if the building is simulated with EP
-	bool isEP() { return simulateEP; }
 	string getFMUFile() { return fmuFile; }
 	string getTMPPath() { return tmpPath; }
 

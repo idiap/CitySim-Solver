@@ -75,7 +75,7 @@ private:
 		try {
 			tmp=new STORED_TYPE[size];
 			m_arraySize=size;
-		} catch (std::exception e) {
+		} catch (std::exception& e) {
 			delete[] tmp;
 			throw e;
 		}

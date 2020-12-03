@@ -1075,6 +1075,8 @@ Building::Building(vector<Wall*> walls, vector<Roof*> roofs, vector<Floor*> floo
     return;
 }
 
+Building::Building(District* pDistrict):pDistrict(pDistrict),logStream(pDistrict->logStream.rdbuf()) {}
+
 Building::~Building() {
     //cout << "delete building " << id << endl;
     // deleting all pointers
@@ -1643,7 +1645,7 @@ bool Building::hasImposedHeatDemand(unsigned int day, unsigned int hour) {
 }
 
 
-Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict), logStream(pDistrict->logStream.rdbuf()) {
+Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict) {
 
 // copy Building(hdl, this)
 // remove evrything not interesting

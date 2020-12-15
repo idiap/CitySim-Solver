@@ -403,10 +403,10 @@ void District::addPedestrian(Pedestrian *b) {
             // add the surface to the Buildings surfaces (daylight calculation)
             getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Wall>(pedestrians.back()->getZone(j)->getWall(k)));
         }
-        // loop for the roofs on this zone
-        for (unsigned int k=0; k<pedestrians.back()->getZone(j)->getnRoofs(); ++k) {
+        // loop for the surfaces on this zone
+        for (unsigned int k=0; k<pedestrians.back()->getZone(j)->getnSurfaces(); ++k) {
             // add the surface to the Ground surfaces (meaning NO daylight calculation)
-            getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Roof>(pedestrians.back()->getZone(j)->getRoof(k)));
+            getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Surface>(pedestrians.back()->getZone(j)->getSurface(k)));
         }
     }
 

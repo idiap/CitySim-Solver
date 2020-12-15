@@ -1717,61 +1717,94 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
             vector<Surface*> zoneSurfaces;
             vector<Floor*>   zoneFloors;
 
-            // read the walls
-            unsigned int wallIndex = 0;
-            while ( hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).ToElement() ) {
+            // read the surfaces
+            unsigned int surfaceIndex = 0;
+            while (hdl.ChildElement("Zone",zoneIndex).ChildElement("Surface", surfaceIndex).ToElement()) {
 
-                // add a new wall to the zoneWalls vector
-                zoneWalls.push_back(new Wall(hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex), this, &logStream));
+                // add a new surface to the zoneSurfaces vector
+                zoneSurfaces.push_back(new Surface(hdl.ChildElement("Zone",zoneIndex).ChildElement("Surface", surfaceIndex), this, &logStream));
 
-                // TiXmlElement *wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).ToElement();
-                // Composite* pWallType;
-                // pWallType = pDistrict->getComposite(wallElem->Attribute("type"));
+                zoneSurfaces.back()->setComposite(pDistrict->getComposite("HumanComposite"));
+                zoneSurfaces.back()->setShortWaveReflectance(0.37);
+                zoneSurfaces.back()->setLongWaveEmissivity(0.95);
 
-                // zoneWalls.push_back(new Wall(to<unsigned int>(wallElem->Attribute("id")),pWallType, 0.37 ,0.0,0.0,0.0,0.0, &logStream)); // fixed SW reflectance
-
-
-              // add the vertices
-                // wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).FirstChildElement("V0").ToElement();
-                // unsigned int vertexIndex = 0;
-                // while(wallElem) {
-                //     // check the presence of coordinates in the vertex tag
-                //     if (wallElem->Attribute("x")==NULL || wallElem->Attribute("y")==NULL || wallElem->Attribute("z")==NULL) break;
-                //     zoneWalls.back()->pushVertex(to<float>(wallElem->Attribute("x")),to<float>(wallElem->Attribute("y")),to<float>(wallElem->Attribute("z")));
-                //     string vertexj = "V" + toString(++vertexIndex);
-                //     wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).FirstChildElement(vertexj.c_str()).ToElement();
-                // }
-                // if (vertexIndex<3) throw(string("Wall id=" + toString(zoneWalls.back()->getId()) + " has only " + toString(vertexIndex) + " vertices"));
-                // zoneWalls.back()->computeNormalAndArea();
-
-                zoneWalls.back()->setComposite(pDistrict->getComposite("HumanComposite"));
-                zoneWalls.back()->setShortWaveReflectance(0.37);
-                zoneWalls.back()->setLongWaveEmissivity(0.95);
-
-                if ((zoneWalls.back()->getArea() > 0.f) && (zoneWalls.back()->getRadius() > 0.f)) {
-                    //logStream << "Wall surface loaded";
-                    // outputs of the calculation
-                    //logStream << "Wall id: " << zoneWalls.back()->getId() << "\tNRE: " << zoneWalls.back()->getNRE() << endl << flush;
+                if ((zoneSurfaces.back()->getArea() > 0.f) && (zoneSurfaces.back()->getRadius() > 0.f)) {
+                    // that's OK
                 }
                 else {
-                    logStream << "(Warning) Wall id=" << zoneWalls.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
-                    delete zoneWalls.back();
-                    zoneWalls.pop_back();
+                    logStream << "(Warning) Surface id=" << zoneSurfaces.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
+                    delete zoneSurfaces.back();
+                    zoneSurfaces.pop_back();
                 }
-                // increment the wall index
-                ++wallIndex;
+                ++surfaceIndex;
             }
             // read the roofs
             unsigned int roofIndex = 0; bool roofUvalueOnly = false;
         
-            // read the surfaces
-            unsigned int surfaceIndex = 0;
+            // read the walls
+            unsigned int wallIndex = 0; bool wallUvalueOnly = false;
             
             // reads the floor area and conductance
             unsigned int floorIndex = 0; bool floorUvalueOnly = false;
-            
+
             // some outputs for verification
-            logStream << "Zone: " << zoneIndex << "\tWalls: " << wallIndex << endl << flush;
+            logStream << "Zone: " << zoneIndex << "\tSurfaces: " << surfaceIndex << endl << flush;
+            
+            // // read the walls
+            // unsigned int wallIndex = 0;
+            // while ( hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).ToElement() ) {
+
+            //     // add a new wall to the zoneWalls vector
+            //     zoneWalls.push_back(new Wall(hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex), this, &logStream));
+
+            //     // TiXmlElement *wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).ToElement();
+            //     // Composite* pWallType;
+            //     // pWallType = pDistrict->getComposite(wallElem->Attribute("type"));
+
+            //     // zoneWalls.push_back(new Wall(to<unsigned int>(wallElem->Attribute("id")),pWallType, 0.37 ,0.0,0.0,0.0,0.0, &logStream)); // fixed SW reflectance
+
+
+            //   // add the vertices
+            //     // wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).FirstChildElement("V0").ToElement();
+            //     // unsigned int vertexIndex = 0;
+            //     // while(wallElem) {
+            //     //     // check the presence of coordinates in the vertex tag
+            //     //     if (wallElem->Attribute("x")==NULL || wallElem->Attribute("y")==NULL || wallElem->Attribute("z")==NULL) break;
+            //     //     zoneWalls.back()->pushVertex(to<float>(wallElem->Attribute("x")),to<float>(wallElem->Attribute("y")),to<float>(wallElem->Attribute("z")));
+            //     //     string vertexj = "V" + toString(++vertexIndex);
+            //     //     wallElem = hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex).FirstChildElement(vertexj.c_str()).ToElement();
+            //     // }
+            //     // if (vertexIndex<3) throw(string("Wall id=" + toString(zoneWalls.back()->getId()) + " has only " + toString(vertexIndex) + " vertices"));
+            //     // zoneWalls.back()->computeNormalAndArea();
+
+            //     zoneWalls.back()->setComposite(pDistrict->getComposite("HumanComposite"));
+            //     zoneWalls.back()->setShortWaveReflectance(0.37);
+            //     zoneWalls.back()->setLongWaveEmissivity(0.95);
+
+            //     if ((zoneWalls.back()->getArea() > 0.f) && (zoneWalls.back()->getRadius() > 0.f)) {
+            //         //logStream << "Wall surface loaded";
+            //         // outputs of the calculation
+            //         //logStream << "Wall id: " << zoneWalls.back()->getId() << "\tNRE: " << zoneWalls.back()->getNRE() << endl << flush;
+            //     }
+            //     else {
+            //         logStream << "(Warning) Wall id=" << zoneWalls.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
+            //         delete zoneWalls.back();
+            //         zoneWalls.pop_back();
+            //     }
+            //     // increment the wall index
+            //     ++wallIndex;
+            // }
+            // // read the roofs
+            // unsigned int roofIndex = 0; bool roofUvalueOnly = false;
+        
+            // // read the surfaces
+            // unsigned int surfaceIndex = 0;
+            
+            // // reads the floor area and conductance
+            // unsigned int floorIndex = 0; bool floorUvalueOnly = false;
+            
+            // // some outputs for verification
+            // logStream << "Zone: " << zoneIndex << "\tWalls: " << wallIndex << endl << flush;
 
 
             // updates the link matrix in a sparse format

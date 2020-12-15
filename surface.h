@@ -112,6 +112,7 @@ public:
     ostream logStream;
 
     Material(TiXmlHandle hdl, ostream* pLogStr=NULL);
+    Material(int id, string name, float conductivity, float cp, float density, float nre=0.f, float gwp=0.f, float ubp=0.f, ostream* pLogStr=NULL);
 
     string getName() { return name; }
     float getConductivity() { return conductivity; }
@@ -151,11 +152,13 @@ class Composite {
 
     Composite(Composite const& c, float insulationTh=-1.);
 
+    Composite(ostream* pLogStr=NULL);
+
     size_t getnLayers() { return vLayer.size(); }
     vector<Layer>* getLayers() { return &vLayer; }
     Layer* getLayer(unsigned int i) { return &(vLayer.at(i));}
 
-    void addLayer(float thickness, Material* m, bool isInsulationLayer);
+    void addLayer(float thickness, Material* m, bool isInsulationLayer=false);
 
     int getId() { return id;}
     void setId(unsigned int newId){ id=newId;}

@@ -48,6 +48,27 @@ District::District(TiXmlHandle XMLHandler, XmlScene* pScene):pScene(pScene),occu
         }
         logStream << composites.size() << " loaded." << endl << flush;
 
+
+        // add a generic composite for the pedestrian, based on Silvia Coccolo's thesis
+        skin = new Material(999990,"human_skin",0.47,3680.0,1085.0, 0,0,0);
+        fat = new Material(999991,"fuman_fat",0.16,2300.0,850.0, 0,0,0);
+        muscle = new Material(999992,"human_muscle",0.42,3768.0,1085.0, 0,0,0);
+        water = new Material(999993,"human_water",0.6,4000.0,1000.0, 0,0,0);
+
+        // auto_ptr<Material> skin(new Material(999990,"human_skin",0.47,3680.0,1085.0, 0,0,0));
+        // auto_ptr<Material> fat(new Material(999991,"fuman_fat",0.16,2300.0,850.0, 0,0,0));
+        // auto_ptr<Material> muscle(new Material(999992,"human_muscle",0.42,3768.0,1085.0, 0,0,0));
+        // auto_ptr<Material> water(new Material(999993,"human_water",0.6,4000.0,1000.0, 0,0,0));
+
+        humanComposite = new Composite();
+        // auto_ptr<Composite> HumanComposite(new Composite());
+        humanComposite->addLayer(0.01, skin);
+        humanComposite->addLayer(0.01, fat);
+        humanComposite->addLayer(0.01, muscle);
+        humanComposite->addLayer(0.14, water);
+        composites.insert( pair<string,Composite*>("HumanComposite", humanComposite) );
+
+
         // Occupancy profiles loading in the District
         occupancyProfiles.clearIdMap();
         occupancyProfiles.readFromXml(XMLHandler.FirstChild("District"));
@@ -559,6 +580,13 @@ void District::writeGML(ofstream& file, string tab) {
 }
 
 District::~District() {
+
+    // delete the characteristics of the human body
+    // delete humanComposite; not necessary: will be deleted afterwards in the loop
+    delete water;
+    delete muscle;
+    delete fat;
+    delete skin;
 
     //logStream << "Destructor of District." << endl << flush;
     for (vector<Building*>::iterator it=buildings.begin();it!=buildings.end();++it) delete *it;

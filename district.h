@@ -42,6 +42,15 @@ private:
 
     vector<DistrictEnergyCenter*> districtEnergyCenters;
 
+    // Added GP
+    Material* skin;
+    Material* fat;
+    Material* muscle;
+    Material* water;
+    Composite* humanComposite;
+    //
+
+
 public:
 
     ostream logStream;

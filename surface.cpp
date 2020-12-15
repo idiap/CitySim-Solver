@@ -29,6 +29,8 @@ Material::Material(TiXmlHandle hdl, ostream* pLogStr):logStream(std::cout.rdbuf(
     else logStream << "Could not read a Material correctly";
 }
 
+Material::Material(int id, string name, float conductivity, float cp, float density, float nre, float gwp, float ubp, ostream* pLogStr):id(id),name(name),conductivity(conductivity),cp(cp),density(density), nre(nre),gwp(gwp),ubp(ubp),logStream(std::cout.rdbuf()) {}
+
 Composite::Composite(TiXmlHandle hdl, ostream* pLogStr):insulationLayer(NULL),logStream(std::cout.rdbuf()) {
 
     // logStream is directed by default to the "cout" streambuf
@@ -135,6 +137,8 @@ Composite::Composite(Composite const& c, float insulationTh):logStream(c.logStre
         }
     }
 }
+
+Composite::Composite(ostream* pLogStr):logStream(std::cout.rdbuf()) {}
 
 void Composite::getSimplifiedNode(float& Cw, float& Kw1, float& Kw2) {
 
@@ -369,7 +373,7 @@ Wall::Wall(TiXmlHandle hdl, Building* pBuilding, ostream* pLogStr):Surface(hdl, 
         // gets or creates a new WallType in the building for this special wall
         composite = b->getDistrict()->getUvalueComposite(to<float>(hdl.ToElement()->Attribute("Uvalue")));
     }
-    else throw(string("In Wall id: ")+toString(id)+", no composite type nor U-value given.");
+    // else throw(string("In Wall id: ")+toString(id)+", no composite type nor U-value given.");
 
     // specific for the Wall
     if (hdl.ToElement()->Attribute("ep_id")) ep_id = hdl.ToElement()->Attribute("ep_id"); // add the ep_id

@@ -1744,7 +1744,7 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 // if (vertexIndex<3) throw(string("Wall id=" + toString(zoneWalls.back()->getId()) + " has only " + toString(vertexIndex) + " vertices"));
                 // zoneWalls.back()->computeNormalAndArea();
 
-
+                zoneWalls.back()->setComposite(pDistrict->getComposite("HumanComposite"));
                 zoneWalls.back()->setShortWaveReflectance(0.37);
                 zoneWalls.back()->setLongWaveEmissivity(0.95);
 
@@ -1772,6 +1772,7 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
             
             // some outputs for verification
             logStream << "Zone: " << zoneIndex << "\tWalls: " << wallIndex << endl << flush;
+
 
             // updates the link matrix in a sparse format
             // a variable to know which one is the first one of the row

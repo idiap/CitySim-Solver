@@ -373,12 +373,13 @@ Wall::Wall(TiXmlHandle hdl, Building* pBuilding, ostream* pLogStr):Surface(hdl, 
         // gets or creates a new WallType in the building for this special wall
         composite = b->getDistrict()->getUvalueComposite(to<float>(hdl.ToElement()->Attribute("Uvalue")));
     }
-    // else throw(string("In Wall id: ")+toString(id)+", no composite type nor U-value given.");
+    else throw(string("In Wall id: ")+toString(id)+", no composite type nor U-value given.");
 
     // specific for the Wall
     if (hdl.ToElement()->Attribute("ep_id")) ep_id = hdl.ToElement()->Attribute("ep_id"); // add the ep_id
     else ep_id = "Wall" + toString(id);
 }
+
 
 Floor::Floor(TiXmlHandle hdl, Building* pBuilding, ostream* pLogStr):Surface(hdl, pBuilding, pLogStr) {
 

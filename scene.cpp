@@ -3058,7 +3058,7 @@ int XmlScene::computeWarmUp() {
     // GP adding warmup for pedestrians
     if (pDistrict->getnPedestrians() > 0) {
         #pragma omp parallel for schedule(dynamic)
-        for (size_t i=i<pDistrict->getnBuildings(); i<(pDistrict->getnBuildings() + pDistrict->getnPedestrians()); ++i){
+        for (size_t i= pDistrict->getnBuildings(); i<(pDistrict->getnBuildings() + pDistrict->getnPedestrians()); ++i){
             value[i] = Model::ThermalWarmUpTime(pDistrict->getPedestrian(i));
         }
     }

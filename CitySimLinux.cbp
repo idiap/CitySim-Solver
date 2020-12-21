@@ -8,12 +8,12 @@
 		<Build>
 			<Target title="debug">
 				<Option output="./bin/Debug/CitySim" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="../Simulations/withCitySim/Nesrine" />
+				<Option working_dir="/idiap/user/gperonato/CitySim-Solver/testing" />
 				<Option object_output="./obj/Debug" />
 				<Option deps_output="C:/Documents and Settings/cgiller/Bureau/SVN/Dtool/.deps" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="/home/kaempf/kaemco/Simulations/buildingsAsphalt.xml" />
+				<Option parameters="pedestrians_single.xml" />
 				<Option projectResourceIncludeDirsRelation="1" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -55,6 +55,7 @@
 		<Linker>
 			<Add library="GLU" />
 			<Add library="gfortran" />
+			<Add library="quadmath" />
 		</Linker>
 		<Unit filename="LAPACK/daxpy.f" />
 		<Unit filename="LAPACK/dcombssq.f" />

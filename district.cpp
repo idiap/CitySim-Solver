@@ -51,7 +51,7 @@ District::District(TiXmlHandle XMLHandler, XmlScene* pScene):pScene(pScene),occu
 
         // add a generic composite for the pedestrian, based on Silvia Coccolo's thesis
         skin = new Material(999990,"human_skin",0.47,3680.0,1085.0, 0,0,0);
-        fat = new Material(999991,"fuman_fat",0.16,2300.0,850.0, 0,0,0);
+        fat = new Material(999991,"human_fat",0.16,2300.0,850.0, 0,0,0);
         muscle = new Material(999992,"human_muscle",0.42,3768.0,1085.0, 0,0,0);
         water = new Material(999993,"human_water",0.6,4000.0,1000.0, 0,0,0);
 
@@ -403,10 +403,10 @@ void District::addPedestrian(Pedestrian *b) {
             // add the surface to the Buildings surfaces (daylight calculation)
             getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Wall>(pedestrians.back()->getZone(j)->getWall(k)));
         }
-        // loop for the surfaces on this zone
-        for (unsigned int k=0; k<pedestrians.back()->getZone(j)->getnSurfaces(); ++k) {
-            // add the surface to the Ground surfaces (meaning NO daylight calculation)
-            getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Surface>(pedestrians.back()->getZone(j)->getSurface(k)));
+        // loop for the roofs on this zone
+        for (unsigned int k=0; k<pedestrians.back()->getZone(j)->getnRoofs(); ++k) {
+            // add the roof
+            getScene()->getDATARadiationScene()->AddDiffuseSamplingPoint(GENHandle<Roof>(pedestrians.back()->getZone(j)->getRoof(k)));
         }
     }
 
@@ -582,7 +582,7 @@ void District::writeGML(ofstream& file, string tab) {
 District::~District() {
 
     // delete the characteristics of the human body
-    // delete humanComposite; not necessary: will be deleted afterwards in the loop
+    // delete humanComposite; not necessary will be deleted afterwards in the loop
     delete water;
     delete muscle;
     delete fat;

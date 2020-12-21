@@ -1666,11 +1666,19 @@ void XmlScene::addAllSurfacesToScene(){
                 // add the surface to the Buildings surfaces (daylight calculation)
                 scene.AddDiffuseSamplingPoint(GENHandle<Wall>(pDistrict->getPedestrian(i)->getZone(j)->getWall(k)));
             }
-            // loop for the surfaces on this zone
-            for (unsigned int k=0; k<pDistrict->getPedestrian(i)->getZone(j)->getnSurfaces(); ++k) {
-                logStream << "Pedestrian " << i << "\tZone: " << j << "\Surface " << k << endl << flush;
+
+            // loop for the roofs on this zone
+            for (unsigned int k=0; k<pDistrict->getPedestrian(i)->getZone(j)->getnRoofs(); ++k) {
+                logStream << "Pedestrian " << i << "\tZone: " << j << "\Roof " << k << endl << flush;
                 // add the surface to the Buildings surfaces (daylight calculation)
-                scene.AddDiffuseSamplingPoint(GENHandle<Surface>(pDistrict->getPedestrian(i)->getZone(j)->getSurface(k)));
+                scene.AddDiffuseSamplingPoint(GENHandle<Surface>(pDistrict->getPedestrian(i)->getZone(j)->getRoof(k)));
+            }
+
+            // loop for the floors on this zone
+            for (unsigned int k=0; k<pDistrict->getPedestrian(i)->getZone(j)->getnFloors(); ++k) {
+                logStream << "Pedestrian " << i << "\tZone: " << j << "\Floor " << k << endl << flush;
+                // add the surface to the Buildings surfaces (daylight calculation)
+                scene.AddDiffuseSamplingPoint(GENHandle<Surface>(pDistrict->getPedestrian(i)->getZone(j)->getFloor(k)));
             }
         }
     }
@@ -3042,12 +3050,13 @@ void XmlScene::computeLongWave(unsigned int day, unsigned int hour) {
 
 int XmlScene::computeWarmUp() {
 
-    vector<int> value(pDistrict->getnBuildings(),0);
+    vector<int> value(pDistrict->getnBuildings()); // GP both buildings and pedestrians
     #pragma omp parallel for schedule(dynamic)
     for (size_t i=0; i<pDistrict->getnBuildings(); ++i){
         value[i] = Model::ThermalWarmUpTime(pDistrict->getBuilding(i));
     }
-    if (pDistrict->getnBuildings()==0) return 0;
+
+    if (pDistrict->getnBuildings()==0) return 0; // GP both buildings and pedestrians
     else return *max_element(value.begin(),value.end());
 
 }

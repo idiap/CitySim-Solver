@@ -1677,11 +1677,19 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
 
 
     // loading and creating the tanks
-    /* Default energy systems for buildings */
-    heatStock = new Tank(0.01, 20.0, 1000.0, 4180.0, 20.0, 35.0);
-    coldStock = new Tank(0.01, 20.0, 1000.0, 4180.0, 5.0, 20.0);
-    heatingUnit = new Boiler(1.0e7, 0.95, 258, 135);
-    coolingUnit = new HeatPump(1.0e7, 0.3, 5.0, 136, 257);
+    /* Default energy systems for pedestrians */
+
+    heatStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 100.0, 50.0);
+    coldStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, -100.0, 50.0);
+    heatingUnit = new HeatPump(1.0e7, 0.3, 100, 1, 365);
+    coolingUnit = new HeatPump(1.0e7, 0.3, -100, 1, 365);
+
+    // heatStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 20.0, 50.0);
+    // coldStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 5.0, 50.0);
+    // heatingUnit = new HeatPump(10000000, 0.3, 55.0, 1, 365);
+    // heatingUnit->setGround(5,10,0.07);
+    // coolingUnit = new HeatPump(10000000, 0.3, 5.0, 1, 365);
+    // coolingUnit->setGround(5,10,0.07);
 
 
     // Cognet: Start of added code.
@@ -1709,7 +1717,7 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 throw (string("Zone id ")+toString(zoneId)+string(": no volume attribute."));
             float zoneVolume = to<float>(hdl.ChildElement("Zone",zoneIndex).ToElement()->Attribute("volume"));
             // sets if the ground floor is there
-            bool groundFloor = false;
+            bool groundFloor = true;
 
             // containers of the elements
             vector<Wall*>    zoneWalls;
@@ -1729,9 +1737,9 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 zoneWalls.back()->setLongWaveEmissivity(0.95);
 
                 if ((zoneWalls.back()->getArea() > 0.f) && (zoneWalls.back()->getRadius() > 0.f)) {
-                    //logStream << "Wall surface loaded";
+                    logStream << "Wall surface loaded";
                     // outputs of the calculation
-                    //logStream << "Wall id: " << zoneWalls.back()->getId() << "\tNRE: " << zoneWalls.back()->getNRE() << endl << flush;
+                    logStream << "Wall id: " << zoneWalls.back()->getId() << endl << flush;
                 }
                 else {
                     logStream << "(Warning) Wall id=" << zoneWalls.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
@@ -1743,15 +1751,70 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
             }
             // read the roofs
             unsigned int roofIndex = 0; bool roofUvalueOnly = false;
-        
+            while ( hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement() ) {
+
+                // add a new roof to the zoneRoofs vector
+                zoneRoofs.push_back(new Roof(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex), this, &logStream));
+
+                // zoneRoofs.back()->setComposite(pDistrict->getComposite("HumanComposite")); // the type="HumanComposite" needs to be set in the XML
+                zoneRoofs.back()->setShortWaveReflectance(0.37);
+                zoneRoofs.back()->setLongWaveEmissivity(0.95);
+
+                if ((zoneRoofs.back()->getArea() > 0.f) && (zoneRoofs.back()->getRadius() > 0.f)) {
+                    // computes for this wall the eco-indicators and add them to the whole building's values
+                    if (hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement()->Attribute("type") != NULL) {
+                        nre += zoneRoofs.back()->getArea()*(1.f-zoneRoofs.back()->getGlazingRatio())*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement()->Attribute("type"))->getNRE();
+                        gwp += zoneRoofs.back()->getArea()*(1.f-zoneRoofs.back()->getGlazingRatio())*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement()->Attribute("type"))->getGWP();
+                        ubp += zoneRoofs.back()->getArea()*(1.f-zoneRoofs.back()->getGlazingRatio())*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement()->Attribute("type"))->getUBP();
+                        //logStream << "Roof id: " << zoneRoofs.back()->getId() << "\tNRE: " << zoneRoofs.back()->getArea()*(1.f-zoneRoofs.back()->getGlazingRatio())*pDistrict->getType(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex).ToElement()->Attribute("type"))->getNRE() << endl << flush;
+                    }
+                }
+                else {
+                    logStream << "(Warning) Roof id=" << zoneRoofs.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
+                    delete zoneRoofs.back();
+                    zoneRoofs.pop_back();
+                }
+                ++roofIndex;
+            }
+
             // read the surfaces
             unsigned int surfaceIndex = 0;
-            
+
             // reads the floor area and conductance
             unsigned int floorIndex = 0; bool floorUvalueOnly = false;
-            
+            while (hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()) {
+
+                // add a new floor to the zoneFloors vector
+                zoneFloors.push_back(new Floor(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex), this, &logStream));
+
+                // zoneFloors.back()->setComposite(pDistrict->getComposite("HumanComposite")); // the type="HumanComposite" needs to be set in the XML
+                zoneFloors.back()->setShortWaveReflectance(0.37);
+                zoneFloors.back()->setLongWaveEmissivity(0.95);
+
+                // test is the floor is fully described
+                if (pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getnLayers()==0) floorUvalueOnly = true;
+
+
+                if ((zoneFloors.back()->getArea() > 0.f) && (zoneFloors.back()->getRadius() > 0.f)) {
+                    // computes for this wall the eco-indicators and add them to the whole building's values
+                    if (hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type") != NULL) {
+                        nre += zoneFloors.back()->getArea()*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getNRE();
+                        gwp += zoneFloors.back()->getArea()*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getGWP();
+                        ubp += zoneFloors.back()->getArea()*pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getUBP();
+                        //logStream << "Floor id: " << zoneFloors.back()->getId() << "\tNRE: " << zoneFloors.back()->getArea()*pDistrict->getType(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getNRE() << endl << flush;
+                    }
+                }
+                else {
+                    logStream << "(Warning) Floor id=" << zoneFloors.back()->getId() << " has a too small surface area or radius, removing it" << endl << flush;
+                    delete zoneFloors.back();
+                    zoneFloors.pop_back();
+                }
+                // increments the floor index
+                ++floorIndex;
+            }
+
             // some outputs for verification
-            logStream << "Zone: " << zoneIndex << "\tWalls: " << wallIndex << endl << flush;
+            logStream << "Zone: " << zoneIndex << "\tWalls: " << wallIndex << "\tRoofs: " << roofIndex << "\tSurfaces: " << surfaceIndex << "\tFloors: " << floorIndex << endl << flush;
 
 
             // updates the link matrix in a sparse format
@@ -1808,8 +1871,8 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
             zones.back()->setKpsi(0.f);
 
             // adds the Tmin and Tmax to the zone if they exist in the Tag Zone or take it from the building itself
-            zones.back()->setTmin(34.f);
-            zones.back()->setTmax(37.f);
+            zones.back()->setTmin(35.0);
+            zones.back()->setTmax(37.0);
 
             zones.back()->setEp_id("SINGLE_ZONE");
 
@@ -1821,7 +1884,7 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
     else throw(string("No thermal zone given for Pedestrian id=")+hdl.ToElement()->Attribute("id"));
 
     // sets the infiltration rate for all zones
-    setNinf(0.f);
+    setNinf(0.1);
 
     update();
 

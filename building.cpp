@@ -1670,7 +1670,7 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
     mrt = true;
     if (hdl.ToElement()->Attribute("mrtEpsilon")) {
         mrtEpsilon = to<float>(hdl.ToElement()->Attribute("mrtEpsilon"));
-       } 
+       }
     else {
         mrtEpsilon = 0.95f;
     }
@@ -1678,11 +1678,11 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
 
     // loading and creating the tanks
     /* Default energy systems for pedestrians */
-
-    heatStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 100.0, 50.0);
-    coldStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, -100.0, 50.0);
-    heatingUnit = new HeatPump(1.0e7, 0.3, 100, 1, 365);
-    coolingUnit = new HeatPump(1.0e7, 0.3, -100, 1, 365);
+    HVACpresence = false;
+    heatStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, -100.0, 100.0);
+    coldStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, -100.0, 100.0);
+    heatingUnit = new HeatPump(1.0e7, 0.3, 100.0, 1, 365);
+    coolingUnit = new HeatPump(1.0e7, 0.3, 0.0, 1, 365);
 
     // heatStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 20.0, 50.0);
     // coldStock = new Tank(0.0001, 20.0, 1000.0, 4180.0, 5.0, 50.0);
@@ -1850,9 +1850,9 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
 
             // creates the OCCUPANTS for the Zone
             Occupants *occupants;
-            
+
             // no occupants defined, empty
-            occupants = new Occupants(0.f);
+            occupants = new Occupants(0);
 
 
             // need to check the consistency of this zone, to define its type (1N, 2N, 3N or even 4N)
@@ -1871,8 +1871,8 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
             zones.back()->setKpsi(0.f);
 
             // adds the Tmin and Tmax to the zone if they exist in the Tag Zone or take it from the building itself
-            zones.back()->setTmin(35.0);
-            zones.back()->setTmax(37.0);
+            zones.back()->setTmin(-200.0);
+            zones.back()->setTmax(200.0);
 
             zones.back()->setEp_id("SINGLE_ZONE");
 

@@ -3050,20 +3050,13 @@ void XmlScene::computeLongWave(unsigned int day, unsigned int hour) {
 
 int XmlScene::computeWarmUp() {
 
-    vector<int> value(pDistrict->getnBuildings() + pDistrict->getnPedestrians(),0); // GP both buildings and pedestrians
+    vector<int> value(pDistrict->getnBuildings(),0);
     #pragma omp parallel for schedule(dynamic)
     for (size_t i=0; i<pDistrict->getnBuildings(); ++i){
         value[i] = Model::ThermalWarmUpTime(pDistrict->getBuilding(i));
     }
-    // GP adding warmup for pedestrians
-    if (pDistrict->getnPedestrians() > 0) {
-        #pragma omp parallel for schedule(dynamic)
-        for (size_t i= pDistrict->getnBuildings(); i<(pDistrict->getnBuildings() + pDistrict->getnPedestrians()); ++i){
-            value[i] = Model::ThermalWarmUpTime(pDistrict->getPedestrian(i));
-        }
-    }
 
-    if (pDistrict->getnBuildings()==0 && pDistrict->getnPedestrians()==0) return 0; // GP both buildings and pedestrians
+    if (pDistrict->getnBuildings()==0) return 0;
     else return *max_element(value.begin(),value.end());
 
 }

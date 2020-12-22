@@ -224,6 +224,10 @@
 		<Unit filename="scene.h" />
 		<Unit filename="surface.cpp" />
 		<Unit filename="surface.h" />
+		<Unit filename="testing/pedestrians_single.xml" />
+		<Unit filename="testing/pedestrians_single_CM.out" />
+		<Unit filename="testing/pedestrians_single_bldg.xml" />
+		<Unit filename="testing/pedestrians_single_bldg_CM.out" />
 		<Unit filename="util.cpp" />
 		<Unit filename="util.h" />
 		<Unit filename="zone.cpp" />

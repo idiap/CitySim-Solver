@@ -281,9 +281,14 @@ District::District(TiXmlHandle XMLHandler, XmlScene* pScene):pScene(pScene),occu
                 }
             }
             else {
-                // the building should be simulated, we then add it to the vector of buildings
-                buildings.push_back(new Pedestrian(XMLHandler.FirstChild("District").ChildElement("Pedestrian",i),this));
+                // the pedestrians should be simulated, we then add them to the vector of buildings
+
+                // Code added with JK
+                // pedestrians.push_back(new Pedestrian(XMLHandler.FirstChild("District").ChildElement("Pedestrian",i),this));
                 // buildings.push_back(pedestrians.back());
+
+                // GP: keep it simple for now
+                buildings.push_back(new Pedestrian(XMLHandler.FirstChild("District").ChildElement("Pedestrian",i),this));
             }
             ++i;
         }

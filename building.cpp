@@ -1733,8 +1733,8 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 zoneWalls.push_back(new Wall(hdl.ChildElement("Zone",zoneIndex).ChildElement("Wall", wallIndex), this, &logStream));
 
                 // zoneWalls.back()->setComposite(pDistrict->getComposite("HumanComposite")); // the type="HumanComposite" needs to be set in the XML
-                zoneWalls.back()->setShortWaveReflectance(0.37);
-                zoneWalls.back()->setLongWaveEmissivity(0.95);
+                // zoneWalls.back()->setShortWaveReflectance(0.37); // set in the XML
+                // zoneWalls.back()->setLongWaveEmissivity(0.95); // set in the XML
 
                 if ((zoneWalls.back()->getArea() > 0.f) && (zoneWalls.back()->getRadius() > 0.f)) {
                     logStream << "Wall surface loaded";
@@ -1757,8 +1757,8 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 zoneRoofs.push_back(new Roof(hdl.ChildElement("Zone",zoneIndex).ChildElement("Roof", roofIndex), this, &logStream));
 
                 // zoneRoofs.back()->setComposite(pDistrict->getComposite("HumanComposite")); // the type="HumanComposite" needs to be set in the XML
-                zoneRoofs.back()->setShortWaveReflectance(0.37);
-                zoneRoofs.back()->setLongWaveEmissivity(0.95);
+                // zoneRoofs.back()->setShortWaveReflectance(0.37); // set in the XML
+                // zoneRoofs.back()->setLongWaveEmissivity(0.95); // set in the XML
 
                 if ((zoneRoofs.back()->getArea() > 0.f) && (zoneRoofs.back()->getRadius() > 0.f)) {
                     // computes for this wall the eco-indicators and add them to the whole building's values
@@ -1788,8 +1788,8 @@ Pedestrian::Pedestrian(TiXmlHandle hdl, District* pDistrict):Building(pDistrict)
                 zoneFloors.push_back(new Floor(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex), this, &logStream));
 
                 // zoneFloors.back()->setComposite(pDistrict->getComposite("HumanComposite")); // the type="HumanComposite" needs to be set in the XML
-                zoneFloors.back()->setShortWaveReflectance(0.37);
-                zoneFloors.back()->setLongWaveEmissivity(0.95);
+                // zoneFloors.back()->setShortWaveReflectance(0.37); // set in the XML
+                // zoneFloors.back()->setLongWaveEmissivity(0.95); // set in the XML
 
                 // test is the floor is fully described
                 if (pDistrict->getComposite(hdl.ChildElement("Zone",zoneIndex).ChildElement("Floor",floorIndex).ToElement()->Attribute("type"))->getnLayers()==0) floorUvalueOnly = true;

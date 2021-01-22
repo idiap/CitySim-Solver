@@ -65,7 +65,7 @@ void VFCDirect::Initialise(RenderClass_t *renderer,
     std::cerr << "Pixels per metre: " << pixelsPerMetre << std::endl;
     #endif
 
-	m_renderWindowDim=std::static_cast<unsigned int>(pixelsPerMetre*modelRadius); // Keep max
+	m_renderWindowDim=pixelsPerMetre*modelRadius; // Keep max
     std::cerr << "Direct renderer window dimension: " << m_renderWindowDim << std::endl;
 
 	m_renderTarget.SetSize(m_renderWindowDim,m_renderWindowDim);

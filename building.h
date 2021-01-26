@@ -119,8 +119,10 @@ public:
 	string getKey() { return key; }
     void setKey(string k){key = k; }
 
-	string getFMUFile() { return fmuFile; }
-	string getTMPPath() { return tmpPath; }
+        // returns if the building is simulated with EP
+        bool isEP() { return simulateEP; }
+        string getFMUFile() { return fmuFile; }
+        string getTMPPath() { return tmpPath; }
 
     // returns the links matrices
     pair<float,float> getLinksAn(unsigned int index) { return linksAn[index]; }

@@ -3394,7 +3394,8 @@ void XmlScene::simulate() {
     updateSimulationModelParameters();
 
     // pre-conditioning period
-    int warmUpDays = computeWarmUp();
+    // int warmUpDays = computeWarmUp();
+    int warmUpDays = 1; // Hard-coded warm-up time for faster simulations
     logStream << "Pre-conditioning period: " << warmUpDays << " days" << endl;
     for (int day = -warmUpDays; day <= -1; ++day) {
 
